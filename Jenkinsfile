@@ -36,44 +36,11 @@ pipeline {
             steps {
                 echo "Deploying application to EKS..."
                 script {
+                    // Update kubeconfig for EKS cluster
                     sh '''
-                    cat <<EOF > deployment.yaml
-                    apiVersion: apps/v1
-                    kind: Deployment
-                    metadata:
-                      name: fastapi-app
-                      labels:
-                        app: fastapi-app
-                    spec:
-                      replicas: 1
-                      selector:
-                        matchLabels:
-                          app: fastapi-app
-                      template:
-                        metadata:
-                          labels:
-                            app: fastapi-app
-                        spec:
-                          containers:
-                          - name: fastapi-container
-                            image: $ECR_REPO:$IMAGE_TAG
-                            ports:
-                            - containerPort: 8000
-                    ---
-                    apiVersion: v1
-                    kind: Service
-                    metadata:
-                      name: fastapi-service
-                    spec:
-                      type: LoadBalancer
-                      ports:
-                      - port: 80
-                        targetPort: 8000
-                      selector:
-                        app: fastapi-app
-                    EOF
-                    
-                    kubectl apply -f deployment.yaml --kubeconfig $KUBE_CONFIG_PATH
+                    aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${CLUSTER_NAME}
+                    cp /var/jenkins_home/deployment.yaml ${WORKSPACE}/deployment.yaml
+                    kubectl apply -f ${WORKSPACE}/deployment.yaml
                     '''
                 }
             }
