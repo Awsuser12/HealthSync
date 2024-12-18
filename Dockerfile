@@ -1,20 +1,23 @@
-# Use the official Python base image
-FROM python:3.10-slim
+# Use an official Python image
+FROM python:3.9-slim
 
-# Set a working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy requirements file to the container
+# Copy the requirements file
 COPY requirement.txt .
 
-# Install dependencies
+# Install PostgreSQL development dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirement.txt
 
-# Copy all application files to the container
+# Copy the application code
 COPY . .
 
-# Expose the port used by the application
-EXPOSE 8000
-
-# Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Set the command to run the app
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
