@@ -11,19 +11,6 @@ pipeline {
     }
 
     stages {
-        stage('Install Dependencies') {
-            steps {
-                echo "Installing dependencies..."
-                script {
-                    // Install required tools
-                    sh '''
-                    sudo apt-get update
-                    sudo apt-get install -y awscli docker.io kubectl
-                    '''
-                }
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker image..."
