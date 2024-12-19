@@ -2,15 +2,27 @@ pipeline {
     agent any
 
     environment {
-        AWS_ACCESS_KEY_ID = 'AKIAUZPNLVFPGWGVS7G3'
-        AWS_SECRET_ACCESS_KEY = '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'
-        AWS_DEFAULT_REGION = 'eu-north-1'
-        ECR_REPO = '329599658334.dkr.ecr.eu-north-1.amazonaws.com/fastapi-app'
-        CLUSTER_NAME = 'my-eks-cluster'
-        IMAGE_TAG = 'latest'
+        // Define the path to the .env file
+        DOTENV_PATH = './env'
     }
 
     stages {
+        stage('Load Environment Variables') {
+            steps {
+                script {
+                    // Read and load variables from the .env file
+                    def props = readProperties file: "${DOTENV_PATH}"
+                    env.AWS_ACCESS_KEY_ID = props['AWS_ACCESS_KEY_ID']
+                    env.AWS_SECRET_ACCESS_KEY = props['AWS_SECRET_ACCESS_KEY']
+                    env.AWS_DEFAULT_REGION = props['AWS_DEFAULT_REGION']
+                    env.ECR_REPO = props['ECR_REPO']
+                    env.CLUSTER_NAME = props['CLUSTER_NAME']
+                    env.IMAGE_TAG = props['IMAGE_TAG']
+                }
+                echo "Environment variables loaded successfully."
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 echo "Building Docker image..."
@@ -26,7 +38,7 @@ pipeline {
                 script {
                     sh '''
                     aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
-                    docker push 329599658334.dkr.ecr.eu-north-1.amazonaws.com/my-app:${IMAGE_TAG}
+                    docker push ${ECR_REPO}:${IMAGE_TAG}
                     '''
                 }
             }
