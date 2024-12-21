@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        AWS_ACCESS_KEY_ID = 'AKIAUZPNLVFPGWGVS7G3'
-        AWS_SECRET_ACCESS_KEY = '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'
+        AWS_ACCESS_KEY_ID = 'AKIAVFIWI7H2KV4XOTUE'
+        AWS_SECRET_ACCESS_KEY = '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'
         AWS_DEFAULT_REGION = 'eu-north-1'
-        ECR_REPO = '329599658334.dkr.ecr.eu-north-1.amazonaws.com/fastapi-app'
-        CLUSTER_NAME = 'my-eks-cluster'
+        ECR_REPO = '354918398452.dkr.ecr.us-east-1.amazonaws.com/healthsync'
+        CLUSTER_NAME = 'MyCluster'
         IMAGE_TAG = 'latest'
     }
 
